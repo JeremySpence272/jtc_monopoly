@@ -1,0 +1,283 @@
+[
+    {
+      "space_id": "space_1",
+      "space_title": "GO",
+      "space_category": "corner",
+      "board_space": 1,
+      "property_id": null
+    },
+    {
+      "space_id": "space_2",
+      "space_title": "Mediterranean Avenue",
+      "space_category": "property",
+      "board_space": 2,
+      "property_id": "mediterranean_avenue"
+    },
+    {
+      "space_id": "space_3",
+      "space_title": "Community Chest",
+      "space_category": "community_chest",
+      "board_space": 3,
+      "property_id": null
+    },
+    {
+      "space_id": "space_4",
+      "space_title": "Baltic Avenue",
+      "space_category": "property",
+      "board_space": 4,
+      "property_id": "baltic_avenue"
+    },
+    {
+      "space_id": "space_5",
+      "space_title": "Income Tax",
+      "space_category": "tax",
+      "board_space": 5,
+      "property_id": null
+    },
+    {
+      "space_id": "space_6",
+      "space_title": "Reading Railroad",
+      "space_category": "railroad",
+      "board_space": 6,
+      "property_id": null
+    },
+    {
+      "space_id": "space_7",
+      "space_title": "Oriental Avenue",
+      "space_category": "property",
+      "board_space": 7,
+      "property_id": "oriental_avenue"
+    },
+    {
+      "space_id": "space_8",
+      "space_title": "Chance",
+      "space_category": "chance",
+      "board_space": 8,
+      "property_id": null
+    },
+    {
+      "space_id": "space_9",
+      "space_title": "Vermont Avenue",
+      "space_category": "property",
+      "board_space": 9,
+      "property_id": "vermont_avenue"
+    },
+    {
+      "space_id": "space_10",
+      "space_title": "Connecticut Avenue",
+      "space_category": "property",
+      "board_space": 10,
+      "property_id": "connecticut_avenue"
+    },
+    {
+      "space_id": "space_11",
+      "space_title": "Just Visiting / In Jail",
+      "space_category": "corner",
+      "board_space": 11,
+      "property_id": null
+    },
+    {
+      "space_id": "space_12",
+      "space_title": "St. Charles Place",
+      "space_category": "property",
+      "board_space": 12,
+      "property_id": "st_charles_place"
+    },
+    {
+      "space_id": "space_13",
+      "space_title": "Electric Company",
+      "space_category": "utility",
+      "board_space": 13,
+      "property_id": null
+    },
+    {
+      "space_id": "space_14",
+      "space_title": "States Avenue",
+      "space_category": "property",
+      "board_space": 14,
+      "property_id": "states_avenue"
+    },
+    {
+      "space_id": "space_15",
+      "space_title": "Virginia Avenue",
+      "space_category": "property",
+      "board_space": 15,
+      "property_id": "virginia_avenue"
+    },
+    {
+      "space_id": "space_16",
+      "space_title": "Pennsylvania Railroad",
+      "space_category": "railroad",
+      "board_space": 16,
+      "property_id": null
+    },
+    {
+      "space_id": "space_17",
+      "space_title": "St. James Place",
+      "space_category": "property",
+      "board_space": 17,
+      "property_id": "st_james_place"
+    },
+    {
+      "space_id": "space_18",
+      "space_title": "Community Chest",
+      "space_category": "community_chest",
+      "board_space": 18,
+      "property_id": null
+    },
+    {
+      "space_id": "space_19",
+      "space_title": "Tennessee Avenue",
+      "space_category": "property",
+      "board_space": 19,
+      "property_id": "tennessee_avenue"
+    },
+    {
+      "space_id": "space_20",
+      "space_title": "New York Avenue",
+      "space_category": "property",
+      "board_space": 20,
+      "property_id": "new_york_avenue"
+    },
+    {
+      "space_id": "space_21",
+      "space_title": "Free Parking",
+      "space_category": "corner",
+      "board_space": 21,
+      "property_id": null
+    },
+    {
+      "space_id": "space_22",
+      "space_title": "Kentucky Avenue",
+      "space_category": "property",
+      "board_space": 22,
+      "property_id": "kentucky_avenue"
+    },
+    {
+      "space_id": "space_23",
+      "space_title": "Chance",
+      "space_category": "chance",
+      "board_space": 23,
+      "property_id": null
+    },
+    {
+      "space_id": "space_24",
+      "space_title": "Indiana Avenue",
+      "space_category": "property",
+      "board_space": 24,
+      "property_id": "indiana_avenue"
+    },
+    {
+      "space_id": "space_25",
+      "space_title": "Illinois Avenue",
+      "space_category": "property",
+      "board_space": 25,
+      "property_id": "illinois_avenue"
+    },
+    {
+      "space_id": "space_26",
+      "space_title": "B. & O. Railroad",
+      "space_category": "railroad",
+      "board_space": 26,
+      "property_id": null
+    },
+    {
+      "space_id": "space_27",
+      "space_title": "Atlantic Avenue",
+      "space_category": "property",
+      "board_space": 27,
+      "property_id": "atlantic_avenue"
+    },
+    {
+      "space_id": "space_28",
+      "space_title": "Ventnor Avenue",
+      "space_category": "property",
+      "board_space": 28,
+      "property_id": "ventnor_avenue"
+    },
+    {
+      "space_id": "space_29",
+      "space_title": "Water Works",
+      "space_category": "utility",
+      "board_space": 29,
+      "property_id": null
+    },
+    {
+      "space_id": "space_30",
+      "space_title": "Marvin Gardens",
+      "space_category": "property",
+      "board_space": 30,
+      "property_id": "marvin_gardens"
+    },
+    {
+      "space_id": "space_31",
+      "space_title": "Go To Jail",
+      "space_category": "corner",
+      "board_space": 31,
+      "property_id": null
+    },
+    {
+      "space_id": "space_32",
+      "space_title": "Pacific Avenue",
+      "space_category": "property",
+      "board_space": 32,
+      "property_id": "pacific_avenue"
+    },
+    {
+      "space_id": "space_33",
+      "space_title": "North Carolina Avenue",
+      "space_category": "property",
+      "board_space": 33,
+      "property_id": "north_carolina_avenue"
+    },
+    {
+      "space_id": "space_34",
+      "space_title": "Community Chest",
+      "space_category": "community_chest",
+      "board_space": 34,
+      "property_id": null
+    },
+    {
+      "space_id": "space_35",
+      "space_title": "Pennsylvania Avenue",
+      "space_category": "property",
+      "board_space": 35,
+      "property_id": "pennsylvania_avenue"
+    },
+    {
+      "space_id": "space_36",
+      "space_title": "Short Line",
+      "space_category": "railroad",
+      "board_space": 36,
+      "property_id": null
+    },
+    {
+      "space_id": "space_37",
+      "space_title": "Chance",
+      "space_category": "chance",
+      "board_space": 37,
+      "property_id": null
+    },
+    {
+      "space_id": "space_38",
+      "space_title": "Park Place",
+      "space_category": "property",
+      "board_space": 38,
+      "property_id": "park_place"
+    },
+    {
+      "space_id": "space_39",
+      "space_title": "Luxury Tax",
+      "space_category": "tax",
+      "board_space": 39,
+      "property_id": null
+    },
+    {
+      "space_id": "space_40",
+      "space_title": "Boardwalk",
+      "space_category": "property",
+      "board_space": 40,
+      "property_id": "boardwalk"
+    }
+  ]
+  

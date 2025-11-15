@@ -1,0 +1,219 @@
+[
+    {
+      "question_id": "mediterranean_q1",
+      "question_name": "Store and print a float",
+      "question_category": "variables_data_types",
+      "question": "Write Python code that stores the number `7` in a variable named `x` and prints `x`. The output should display `7.0`."
+    },
+    {
+      "question_id": "baltic_q1",
+      "question_name": "Format a string with a variable",
+      "question_category": "variables_data_types",
+      "question": "Write Python code that stores a name in a variable `name` and then prints a message that says `Hello, ` followed by the value of `name`. For example, if `name = \"Alice\"`, the output should be `Hello, Alice`."
+    },
+    {
+      "question_id": "oriental_q1",
+      "question_name": "Conditional expression for age check",
+      "question_category": "logic_control_flow",
+      "question": "A variable `age` is already defined with a numeric value. Write Python code that prints `adult` if `age` is greater than or equal to 18, otherwise prints `minor`. Example: if `age = 20`, the output should be `adult`. If `age = 15`, the output should be `minor`."
+    },
+    {
+      "question_id": "vermont_q1",
+      "question_name": "Boolean expression in a range",
+      "question_category": "logic_control_flow",
+      "question": "A variable `x` is already defined with a numeric value. Write Python code that assigns to `is_valid` the value `True` if `x` is between 1 and 10 (inclusive on both ends), otherwise assigns `False`. Then print the value of `is_valid`. Example: if `x = 5`, your code should print `True`. If `x = 15`, your code should print `False`."
+    },
+    {
+      "question_id": "connecticut_q1",
+      "question_name": "Loop over a list",
+      "question_category": "logic_control_flow",
+      "question": "A list variable `nums` is already defined. Write Python code that goes through each number in `nums` and prints each number on its own line. Each number should be printed separately on a new line. Example: if `nums = [1, 2, 3]`, the output should be three lines: `1` (newline) `2` (newline) `3`."
+    },
+    {
+      "question_id": "st_charles_q1",
+      "question_name": "Define a square function",
+      "question_category": "functions",
+      "question": "Write Python code that defines a function `square(n)` that returns `n` squared."
+    },
+    {
+      "question_id": "states_q1",
+      "question_name": "Call a function and store result",
+      "question_category": "functions",
+      "question": "Write Python code that calls a function `greet(name)` with the argument `\"Alex\"` and stores the result in a variable called `message`."
+    },
+    {
+      "question_id": "virginia_q1",
+      "question_name": "Function with default argument",
+      "question_category": "functions",
+      "question": "Write Python code that defines a function `add(a, b=10)` that returns the sum of `a` and `b`."
+    },
+    {
+      "question_id": "st_james_q1",
+      "question_name": "Create a list of even numbers",
+      "question_category": "lists_dictionaries",
+      "question": "Write Python code that creates a list `evens` containing all even numbers from 0 to 10 (inclusive)."
+    },
+    {
+      "question_id": "tennessee_q1",
+      "question_name": "Add a key to a dictionary",
+      "question_category": "lists_dictionaries",
+      "question": "Write Python code that adds a new key `\"grade\"` with value `95` to an existing dictionary `student`."
+    },
+    {
+      "question_id": "new_york_q1",
+      "question_name": "Get a value from a dictionary",
+      "question_category": "lists_dictionaries",
+      "question": "A dictionary variable `student` is already defined. Write Python code that stores the value associated with the key `\"name\"` in a variable called `student_name`."
+    },
+    {
+      "question_id": "kentucky_q1",
+      "question_name": "Create an ArgumentParser",
+      "question_category": "command_line_argparse",
+      "question": "Write Python code that creates an `ArgumentParser` named `parser` with the description `\"Demo script\"`."
+    },
+    {
+      "question_id": "indiana_q1",
+      "question_name": "Add a filename argument",
+      "question_category": "command_line_argparse",
+      "question": "Write Python code that adds a required string argument called `\"filename\"` to a parser `parser`."
+    },
+    {
+      "question_id": "illinois_q1",
+      "question_name": "Parse command-line arguments",
+      "question_category": "command_line_argparse",
+      "question": "Write Python code that parses command-line arguments into a variable named `args` using an existing `ArgumentParser` named `parser`."
+    },
+    {
+      "question_id": "atlantic_q1",
+      "question_name": "Open a file with with-statement",
+      "question_category": "file_io",
+      "question": "Write Python code that opens the file `\"data.txt\"` for reading and assigns it to a variable named `f`."
+    },
+    {
+      "question_id": "ventnor_q1",
+      "question_name": "Read a whole file into a string",
+      "question_category": "file_io",
+      "question": "Write Python code that reads the entire contents of `\"data.txt\"` into a variable called `text`."
+    },
+    {
+      "question_id": "marvin_gardens_q1",
+      "question_name": "Append a line to a log file",
+      "question_category": "file_io",
+      "question": "Write Python code that appends the string `\"done\\n\"` to the file `\"log.txt\"`."
+    },
+    {
+      "question_id": "pacific_q1",
+      "question_name": "Send a GET request",
+      "question_category": "apis_external_data",
+      "question": "Write Python code that sends a GET request to the URL `\"https://api.example.com/data\"` and stores the response in a variable called `response`."
+    },
+    {
+      "question_id": "north_carolina_q1",
+      "question_name": "Parse JSON from a response",
+      "question_category": "apis_external_data",
+      "question": "Write Python code that extracts JSON data from a `response` object into a variable called `data`."
+    },
+    {
+      "question_id": "pennsylvania_q1",
+      "question_name": "Check response status code",
+      "question_category": "apis_external_data",
+      "question": "A variable `response` is already defined and contains a response object from a requests library call. Write Python code that stores the status code of the response in a variable called `status_code`."
+    },
+    {
+      "question_id": "park_place_q1",
+      "question_name": "Get response text content",
+      "question_category": "apis_external_data",
+      "question": "A variable `response` is already defined and contains a response object from a requests library call. Write Python code that stores the text content of the response in a variable called `content`."
+    },
+    {
+      "question_id": "boardwalk_q1",
+      "question_name": "Send a POST request with data",
+      "question_category": "apis_external_data",
+      "question": "Write Python code that sends a POST request to the URL `\"https://api.example.com/submit\"` with JSON data `{\"name\": \"Alice\", \"age\": 30}` and stores the response in a variable called `response`."
+    },
+    {
+      "question_id": "reading_railroad_q1",
+      "question_name": "Variables & Data Flow",
+      "question_category": "railroad",
+      "question_type": "multiple_choice",
+      "question": "Which of the following best describes a variable in Python?",
+      "options": [
+        "A. A built-in function that stores data permanently",
+        "B. A named reference that points to a value in memory",
+        "C. A separate file used to save program output",
+        "D. A Python package used to import external data"
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "question_id": "pennsylvania_railroad_q1",
+      "question_name": "Logic & Control Flow",
+      "question_category": "railroad",
+      "question_type": "multiple_choice",
+      "question": "What is the main purpose of a conditional (if/elif/else) statement?",
+      "options": [
+        "A. To repeat code multiple times",
+        "B. To store collections of values",
+        "C. To choose between different paths of execution",
+        "D. To convert one data type into another"
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "question_id": "bo_railroad_q1",
+      "question_name": "Functions",
+      "question_category": "railroad",
+      "question_type": "multiple_choice",
+      "question": "Why do we use functions in programming?",
+      "options": [
+        "A. To increase the size of our code",
+        "B. To organize reusable blocks of logic",
+        "C. To automatically create files",
+        "D. To make Python run faster by default"
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "question_id": "short_line_q1",
+      "question_name": "Lists & Dictionaries",
+      "question_category": "railroad",
+      "question_type": "multiple_choice",
+      "question": "Which statement best describes a Python dictionary?",
+      "options": [
+        "A. A random list of strings",
+        "B. A fixed-length collection of numbers",
+        "C. A structure that maps keys to values",
+        "D. A function that prints definitions"
+      ],
+      "correct_answer": "C"
+    },
+    {
+      "question_id": "electric_company_q1",
+      "question_name": "File I/O",
+      "question_category": "utility",
+      "question_type": "multiple_choice",
+      "question": "When reading a file with with open(\"data.txt\") as f:, why is the with statement useful?",
+      "options": [
+        "A. It automatically imports the file into pandas",
+        "B. It ensures the file closes properly even if an error occurs",
+        "C. It makes the file read faster",
+        "D. It converts text into Python dictionaries"
+      ],
+      "correct_answer": "B"
+    },
+    {
+      "question_id": "water_works_q1",
+      "question_name": "APIs & External Data",
+      "question_category": "utility",
+      "question_type": "multiple_choice",
+      "question": "What is the main purpose of an API in programming?",
+      "options": [
+        "A. To store files on your computer",
+        "B. To connect a Python script to external data or services",
+        "C. To format strings for printing",
+        "D. To make a loop run more efficiently"
+      ],
+      "correct_answer": "B"
+    }
+  ]
+  

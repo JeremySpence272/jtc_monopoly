@@ -1,0 +1,276 @@
+[
+  {
+    "card_id": "cc_1",
+    "deck_type": "community_chest",
+    "message": "You optimized your Python loop! Collect $50 from the bank.",
+    "amount": 50,
+    "type": "credit"
+  },
+  {
+    "card_id": "cc_2",
+    "deck_type": "community_chest",
+    "message": "You forgot to close a file after writing. Pay a $20 cleanup fee.",
+    "amount": 20,
+    "type": "debit"
+  },
+  {
+    "card_id": "cc_3",
+    "deck_type": "community_chest",
+    "message": "Your pandas DataFrame finally loaded correctly. Collect $25.",
+    "amount": 25,
+    "type": "credit"
+  },
+  {
+    "card_id": "cc_4",
+    "deck_type": "community_chest",
+    "message": "You mixed up list and tuple syntax. Pay $15 for debugging help.",
+    "amount": 15,
+    "type": "debit"
+  },
+  {
+    "card_id": "cc_5",
+    "deck_type": "community_chest",
+    "message": "You wrote your first command-line tool using argparse. Collect $40.",
+    "amount": 40,
+    "type": "credit"
+  },
+  {
+    "card_id": "cc_6",
+    "deck_type": "community_chest",
+    "message": "Your API key regenerated successfully. Pay the bank $10 in configuration fees.",
+    "amount": 10,
+    "type": "debit"
+  },
+  {
+    "card_id": "cc_7",
+    "deck_type": "community_chest",
+    "message": "You helped a classmate fix their indentation error. Collect $30.",
+    "amount": 30,
+    "type": "credit"
+  },
+  {
+    "card_id": "cc_8",
+    "deck_type": "community_chest",
+    "message": "Your JSON file parsed on the first try. Collect $20.",
+    "amount": 20,
+    "type": "credit"
+  },
+  {
+    "card_id": "cc_9",
+    "deck_type": "community_chest",
+    "message": "Your function didn't return anything… again. Pay $25 to the bank.",
+    "amount": 25,
+    "type": "debit"
+  },
+  {
+    "card_id": "cc_10",
+    "deck_type": "community_chest",
+    "message": "You discovered a missing colon and saved your project. Collect $45.",
+    "amount": 45,
+    "type": "credit"
+  },
+  {
+    "card_id": "cc_11",
+    "deck_type": "community_chest",
+    "message": "You accidentally overwrote a variable name. Pay $15.",
+    "amount": 15,
+    "type": "debit"
+  },
+  {
+    "card_id": "cc_12",
+    "deck_type": "community_chest",
+    "message": "Your visualization impressed the whole cohort. Collect $60.",
+    "amount": 60,
+    "type": "credit"
+  },
+  {
+    "card_id": "cc_13",
+    "deck_type": "community_chest",
+    "message": "You forgot to activate your virtual environment. Pay $35.",
+    "amount": 35,
+    "type": "debit"
+  },
+  {
+    "card_id": "cc_14",
+    "deck_type": "community_chest",
+    "message": "Your script successfully handled an exception. Collect $20.",
+    "amount": 20,
+    "type": "credit"
+  },
+  {
+    "card_id": "cc_15",
+    "deck_type": "community_chest",
+    "message": "You deleted an unnecessary print statement. Collect $10.",
+    "amount": 10,
+    "type": "credit"
+  },
+  {
+    "card_id": "cc_16",
+    "deck_type": "community_chest",
+    "message": "You wrote clean, readable code today. Collect $50.",
+    "amount": 50,
+    "type": "credit"
+  },
+  {
+    "card_id": "cc_17",
+    "deck_type": "community_chest",
+    "message": "Your file path broke because of Windows backslashes. Pay $25.",
+    "amount": 25,
+    "type": "debit"
+  },
+  {
+    "card_id": "cc_18",
+    "deck_type": "community_chest",
+    "message": "You passed all unit tests. Collect $35.",
+    "amount": 35,
+    "type": "credit"
+  },
+  {
+    "card_id": "cc_19",
+    "deck_type": "community_chest",
+    "message": "Your while loop ran forever. Pay $30.",
+    "amount": 30,
+    "type": "debit"
+  },
+  {
+    "card_id": "cc_20",
+    "deck_type": "community_chest",
+    "message": "You refactored everything into functions. Collect $45.",
+    "amount": 45,
+    "type": "credit"
+  },
+  {
+    "card_id": "chance_1",
+    "deck_type": "chance",
+    "message": "Your API request hit a rate limit. Pay $50.",
+    "amount": 50,
+    "type": "debit"
+  },
+  {
+    "card_id": "chance_2",
+    "deck_type": "chance",
+    "message": "You discovered a super helpful Python library. Collect $75.",
+    "amount": 75,
+    "type": "credit"
+  },
+  {
+    "card_id": "chance_3",
+    "deck_type": "chance",
+    "message": "You corrupted a CSV during a file write. Pay $40.",
+    "amount": 40,
+    "type": "debit"
+  },
+  {
+    "card_id": "chance_4",
+    "deck_type": "chance",
+    "message": "Your plot rendered perfectly on the first try. Collect $60.",
+    "amount": 60,
+    "type": "credit"
+  },
+  {
+    "card_id": "chance_5",
+    "deck_type": "chance",
+    "message": "Your dictionary keys collided. Pay $35.",
+    "amount": 35,
+    "type": "debit"
+  },
+  {
+    "card_id": "chance_6",
+    "deck_type": "chance",
+    "message": "Your Jupyter notebook finally stopped crashing. Collect $55.",
+    "amount": 55,
+    "type": "credit"
+  },
+  {
+    "card_id": "chance_7",
+    "deck_type": "chance",
+    "message": "You installed the wrong package version. Pay $45.",
+    "amount": 45,
+    "type": "debit"
+  },
+  {
+    "card_id": "chance_8",
+    "deck_type": "chance",
+    "message": "Your regex expression actually worked. Collect $50.",
+    "amount": 50,
+    "type": "credit"
+  },
+  {
+    "card_id": "chance_9",
+    "deck_type": "chance",
+    "message": "You fixed a circular import. Collect $30.",
+    "amount": 30,
+    "type": "credit"
+  },
+  {
+    "card_id": "chance_10",
+    "deck_type": "chance",
+    "message": "You erased your entire virtual environment. Pay $60.",
+    "amount": 60,
+    "type": "debit"
+  },
+  {
+    "card_id": "chance_11",
+    "deck_type": "chance",
+    "message": "Your code produced the correct output on the first run. Collect $40.",
+    "amount": 40,
+    "type": "credit"
+  },
+  {
+    "card_id": "chance_12",
+    "deck_type": "chance",
+    "message": "You forgot to handle a None value. Pay $25.",
+    "amount": 25,
+    "type": "debit"
+  },
+  {
+    "card_id": "chance_13",
+    "deck_type": "chance",
+    "message": "Your script successfully parsed 10,000 rows. Collect $80.",
+    "amount": 80,
+    "type": "credit"
+  },
+  {
+    "card_id": "chance_14",
+    "deck_type": "chance",
+    "message": "Your for-loop variable shadowed another name. Pay $30.",
+    "amount": 30,
+    "type": "debit"
+  },
+  {
+    "card_id": "chance_15",
+    "deck_type": "chance",
+    "message": "You improved your time complexity from O(n²) to O(n). Collect $100.",
+    "amount": 100,
+    "type": "credit"
+  },
+  {
+    "card_id": "chance_16",
+    "deck_type": "chance",
+    "message": "Your API returned bad JSON. Pay $35.",
+    "amount": 35,
+    "type": "debit"
+  },
+  {
+    "card_id": "chance_17",
+    "deck_type": "chance",
+    "message": "You wrote your first custom exception class. Collect $45.",
+    "amount": 45,
+    "type": "credit"
+  },
+  {
+    "card_id": "chance_18",
+    "deck_type": "chance",
+    "message": "You forgot the self parameter in a method. Pay $20.",
+    "amount": 20,
+    "type": "debit"
+  },
+  {
+    "card_id": "chance_19",
+    "deck_type": "chance",
+    "message": "Your Python environment broke during an update. Pay $50.",
+    "amount": 50,
+    "type": "debit"
+  }
+]
+

@@ -1,0 +1,43 @@
+[
+    {
+      "category_id": "variables_data_types",
+      "category_name": "Variables & Data Types",
+      "category_color": "brown"
+    },
+    {
+      "category_id": "logic_control_flow",
+      "category_name": "Logic & Control Flow",
+      "category_color": "light_blue"
+    },
+    {
+      "category_id": "functions",
+      "category_name": "Functions",
+      "category_color": "pink"
+    },
+    {
+      "category_id": "lists_dictionaries",
+      "category_name": "Lists & Dictionaries",
+      "category_color": "orange"
+    },
+    {
+      "category_id": "command_line_argparse",
+      "category_name": "Command Line - Argparse",
+      "category_color": "red"
+    },
+    {
+      "category_id": "file_io",
+      "category_name": "File I/O",
+      "category_color": "yellow"
+    },
+    {
+      "category_id": "data_visualization_pandas",
+      "category_name": "Data & Visualization (Pandas)",
+      "category_color": "green"
+    },
+    {
+      "category_id": "apis_external_data",
+      "category_name": "APIs & External Data",
+      "category_color": "dark_blue"
+    }
+  ]
+  
