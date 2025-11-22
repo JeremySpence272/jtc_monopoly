@@ -54,7 +54,9 @@ export const ManagePropertyModal: React.FC<ManagePropertyModalProps> = ({
 
   if (!isOpen || !space || !property) return null;
 
-  const isOwner = ownerTeam?.id === currentTeam.id;
+  // Allow the owner to manage their property regardless of whose turn it is
+  // The owner can always manage their property, even when it's not their turn
+  const isOwner = ownerTeam !== null; // If property is owned, owner can manage it
   const isProperty =
     property.property_color !== "railroad" &&
     property.property_color !== "utility";
@@ -98,7 +100,9 @@ export const ManagePropertyModal: React.FC<ManagePropertyModalProps> = ({
             <p>
               <strong>Owner:</strong> {ownerTeam.name}
             </p>
-            {isOwner && <p className="owner-badge">You own this property</p>}
+            {ownerTeam.id === currentTeam.id && (
+              <p className="owner-badge">You own this property</p>
+            )}
           </div>
         )}
 
@@ -156,96 +160,112 @@ export const ManagePropertyModal: React.FC<ManagePropertyModalProps> = ({
           )}
         </div>
 
-        {isOwner && (
+        {ownerTeam && (
           <div className="manage-actions">
-            {isProperty && (
-              <>
-                <button
-                  className="btn btn-primary"
-                  onClick={onBuyHouse}
-                  disabled={!canBuyHouse}
-                >
-                  Buy House (${houseCost})
-                </button>
-                {!canBuyHouse && space.houses < 2 && (
-                  <p className="help-text">
-                    You must own all properties in this color group to build
-                    houses.
-                  </p>
-                )}
-                <button
-                  className="btn btn-secondary"
-                  onClick={onSellHouse}
-                  disabled={!canSellHouse}
-                >
-                  Sell House (${Math.floor(houseCost * 0.5)})
-                </button>
-                {!canSellHouse && (
-                  <p className="help-text">No houses to sell.</p>
-                )}
-              </>
+            {/* Show management options to the owner, regardless of whose turn it is */}
+            {/* The handlers will ensure only the owner can actually perform actions */}
+            {ownerTeam.id !== currentTeam.id && (
+              <p
+                className="help-text"
+                style={{
+                  color: "#666",
+                  fontStyle: "italic",
+                  marginBottom: "10px",
+                }}
+              >
+                You can manage this property even though it's not your turn
+              </p>
             )}
-            <button className="btn btn-danger" onClick={onSellProperty}>
-              Sell Property to Bank (${sellPrice})
-            </button>
-            <button
-              className="btn btn-secondary"
-              onClick={() => setShowSellToTeam(!showSellToTeam)}
-            >
-              {showSellToTeam ? "Cancel Sale" : "Sell to Another Team"}
-            </button>
-            {showSellToTeam && (
-              <div className="sell-to-team-section">
-                <h4>Sell to Another Team</h4>
-                <div className="form-group">
-                  <label>Select Team:</label>
-                  <select
-                    value={selectedBuyerId || ""}
-                    onChange={(e) =>
-                      setSelectedBuyerId(parseInt(e.target.value) || null)
-                    }
-                    className="team-select"
+            <>
+              {isProperty && (
+                <>
+                  <button
+                    className="btn btn-primary"
+                    onClick={onBuyHouse}
+                    disabled={!canBuyHouse}
                   >
-                    <option value="">Choose a team...</option>
-                    {availableBuyers.map((team) => (
-                      <option key={team.id} value={team.id}>
-                        {team.name} (${team.resources})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Sale Price ($):</label>
-                  <input
-                    type="number"
-                    value={sellPriceInput}
-                    onChange={(e) => setSellPriceInput(e.target.value)}
-                    placeholder="Enter price"
-                    min="1"
-                    className="price-input"
-                  />
-                  {selectedBuyer && price > 0 && !buyerCanAfford && (
-                    <p className="warning-text">
-                      ⚠️ {selectedBuyer.name} only has $
-                      {selectedBuyer.resources} and cannot afford ${price}
+                    Buy House (${houseCost})
+                  </button>
+                  {!canBuyHouse && space.houses < 3 && (
+                    <p className="help-text">
+                      You must own all properties in this color group to build
+                      houses.
                     </p>
                   )}
+                  <button
+                    className="btn btn-secondary"
+                    onClick={onSellHouse}
+                    disabled={!canSellHouse}
+                  >
+                    Sell House (${Math.floor(houseCost * 0.5)})
+                  </button>
+                  {!canSellHouse && (
+                    <p className="help-text">No houses to sell.</p>
+                  )}
+                </>
+              )}
+              <button className="btn btn-danger" onClick={onSellProperty}>
+                Sell Property to Bank (${sellPrice})
+              </button>
+              <button
+                className="btn btn-secondary"
+                onClick={() => setShowSellToTeam(!showSellToTeam)}
+              >
+                {showSellToTeam ? "Cancel Sale" : "Sell to Another Team"}
+              </button>
+              {showSellToTeam && (
+                <div className="sell-to-team-section">
+                  <h4>Sell to Another Team</h4>
+                  <div className="form-group">
+                    <label>Select Team:</label>
+                    <select
+                      value={selectedBuyerId || ""}
+                      onChange={(e) =>
+                        setSelectedBuyerId(parseInt(e.target.value) || null)
+                      }
+                      className="team-select"
+                    >
+                      <option value="">Choose a team...</option>
+                      {availableBuyers.map((team) => (
+                        <option key={team.id} value={team.id}>
+                          {team.name} (${team.resources})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Sale Price ($):</label>
+                    <input
+                      type="number"
+                      value={sellPriceInput}
+                      onChange={(e) => setSellPriceInput(e.target.value)}
+                      placeholder="Enter price"
+                      min="1"
+                      className="price-input"
+                    />
+                    {selectedBuyer && price > 0 && !buyerCanAfford && (
+                      <p className="warning-text">
+                        ⚠️ {selectedBuyer.name} only has $
+                        {selectedBuyer.resources} and cannot afford ${price}
+                      </p>
+                    )}
+                  </div>
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleSellToTeam}
+                    disabled={
+                      !selectedBuyerId ||
+                      !sellPriceInput ||
+                      isNaN(parseInt(sellPriceInput)) ||
+                      parseInt(sellPriceInput) <= 0 ||
+                      !buyerCanAfford
+                    }
+                  >
+                    Confirm Sale
+                  </button>
                 </div>
-                <button
-                  className="btn btn-primary"
-                  onClick={handleSellToTeam}
-                  disabled={
-                    !selectedBuyerId ||
-                    !sellPriceInput ||
-                    isNaN(parseInt(sellPriceInput)) ||
-                    parseInt(sellPriceInput) <= 0 ||
-                    !buyerCanAfford
-                  }
-                >
-                  Confirm Sale
-                </button>
-              </div>
-            )}
+              )}
+            </>
           </div>
         )}
 

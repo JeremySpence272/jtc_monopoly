@@ -27,11 +27,6 @@ export const DiceControls: React.FC<DiceControlsProps> = ({
     <div className="dice-controls">
       <div className="current-team-info">
         <h3>{currentTeam.name}'s Turn</h3>
-        {currentTeam.inTrap && (
-          <div className="jail-status">
-            In Jail (Turn {currentTeam.trapTurns}/3)
-          </div>
-        )}
       </div>
 
       <div className="dice-display">

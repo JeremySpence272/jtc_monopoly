@@ -16,10 +16,10 @@ export class MonopolyGame {
 
   constructor() {
     this.teams = [
-      { id: 0, name: 'Team 1', color: '#FF0000', resources: 1500, position: 0, properties: [], railroads: [], utilities: [], inTrap: false, trapTurns: 0, getOutOfTrapFree: 0 },
-      { id: 1, name: 'Team 2', color: '#0000FF', resources: 1500, position: 0, properties: [], railroads: [], utilities: [], inTrap: false, trapTurns: 0, getOutOfTrapFree: 0 },
-      { id: 2, name: 'Team 3', color: '#00FF00', resources: 1500, position: 0, properties: [], railroads: [], utilities: [], inTrap: false, trapTurns: 0, getOutOfTrapFree: 0 },
-      { id: 3, name: 'Team 4', color: '#FFFF00', resources: 1500, position: 0, properties: [], railroads: [], utilities: [], inTrap: false, trapTurns: 0, getOutOfTrapFree: 0 },
+      { id: 0, name: 'Team 1', color: '#FF0000', resources: 1500, position: 0, properties: [], railroads: [], utilities: [], inTrap: false, trapTurns: 0, getOutOfTrapFree: 0, isEliminated: false },
+      { id: 1, name: 'Team 2', color: '#0000FF', resources: 1500, position: 0, properties: [], railroads: [], utilities: [], inTrap: false, trapTurns: 0, getOutOfTrapFree: 0, isEliminated: false },
+      { id: 2, name: 'Team 3', color: '#00FF00', resources: 1500, position: 0, properties: [], railroads: [], utilities: [], inTrap: false, trapTurns: 0, getOutOfTrapFree: 0, isEliminated: false },
+      { id: 3, name: 'Team 4', color: '#FFFF00', resources: 1500, position: 0, properties: [], railroads: [], utilities: [], inTrap: false, trapTurns: 0, getOutOfTrapFree: 0, isEliminated: false },
     ];
     this.communityChestDeck = [];
     this.chanceDeck = [];
@@ -29,6 +29,29 @@ export class MonopolyGame {
     this.currentTeamIndex = 0;
     this.doubleCount = 0;
     this.addLog('Game started!', 'info');
+  }
+
+  private eliminateTeam(team: Team): void {
+    if (team.isEliminated) return;
+    // Revert all owned spaces to bank and reset houses
+    this.boardSpaces.forEach(space => {
+      if (space.owner === team.id) {
+        space.owner = null;
+        space.houses = 0;
+      }
+    });
+    team.properties = [];
+    team.railroads = [];
+    team.utilities = [];
+    team.isEliminated = true;
+    this.addLog(`${team.name} has been eliminated. All properties return to the bank.`, 'error');
+  }
+
+  checkElimination(team: Team): void {
+    if (team.resources <= 0) {
+      team.resources = 0;
+      this.eliminateTeam(team);
+    }
   }
 
   createBoard(): BoardSpace[] {
@@ -84,24 +107,28 @@ export class MonopolyGame {
     return this.boardSpaces.find(space => space.board_space === position + 1);
   }
 
+  getOwnedSpaces(team: Team): BoardSpace[] {
+    return this.boardSpaces.filter(space => space.owner === team.id);
+  }
+
   async handleLanding(team: Team, space: BoardSpace, diceRoll?: DiceRoll): Promise<LandingAction> {
     this.addLog(`${team.name} landed on ${space.space_title}`, 'info');
 
     switch (space.space_category) {
       case 'corner':
-        if (space.space_id === 'go') {
+        // Check by board_space for reliability (1=GO, 11=Jail, 21=Free Parking, 31=Go To Jail)
+        if (space.board_space === 1 || space.space_id === 'go' || space.space_title === 'GO') {
           // Already handled in moveTeam
           return { action: null, space };
-        } else if (space.space_id === 'go_to_jail') {
-          team.position = 10; // Jail position
-          team.inTrap = true;
-          team.trapTurns = 0;
+        } else if (space.board_space === 31 || space.space_id === 'go_to_jail' || space.space_title === 'Go To Jail') {
+          // Go To Jail - just move to jail position, no blocking
+          team.position = 10; // Jail position (board_space 11, which is index 10)
           this.addLog(`${team.name} was sent to Jail!`, 'warning');
-          return { action: null, space };
-        } else if (space.space_id === 'jail') {
+          return { action: 'goToJail', space };
+        } else if (space.board_space === 11 || space.space_id === 'jail' || space.space_title?.includes('Jail')) {
           // Just visiting
           return { action: null, space };
-        } else if (space.space_id === 'free_parking') {
+        } else if (space.board_space === 21 || space.space_id === 'free_parking' || space.space_title === 'Free Parking') {
           // Free parking - nothing happens
           return { action: null, space };
         }
@@ -117,6 +144,18 @@ export class MonopolyGame {
           } else if (space.owner !== team.id) {
             const ownerTeam = this.teams[space.owner];
             const rent = this.calculateRent(space, ownerTeam, diceRoll);
+            
+            // Check if team can afford rent before paying
+            if (team.resources < rent) {
+              return { 
+                action: 'insufficientFundsForRent', 
+                space, 
+                property, 
+                rentAmount: rent,
+                ownerTeamId: space.owner
+              };
+            }
+            
             this.payRent(team, ownerTeam, rent, space);
             return { action: 'payRent', space, property, rentAmount: rent };
           }
@@ -129,6 +168,17 @@ export class MonopolyGame {
         } else if (space.owner !== team.id) {
           const ownerTeam = this.teams[space.owner];
           const rent = this.calculateRent(space, ownerTeam, diceRoll);
+          
+          // Check if team can afford rent before paying
+          if (team.resources < rent) {
+            return { 
+              action: 'insufficientFundsForRent', 
+              space, 
+              rentAmount: rent,
+              ownerTeamId: space.owner
+            };
+          }
+          
           this.payRent(team, ownerTeam, rent, space);
           return { action: 'payRent', space, rentAmount: rent };
         }
@@ -140,6 +190,17 @@ export class MonopolyGame {
         } else if (space.owner !== team.id) {
           const ownerTeam = this.teams[space.owner];
           const rent = this.calculateRent(space, ownerTeam, diceRoll);
+          
+          // Check if team can afford rent before paying
+          if (team.resources < rent) {
+            return { 
+              action: 'insufficientFundsForRent', 
+              space, 
+              rentAmount: rent,
+              ownerTeamId: space.owner
+            };
+          }
+          
           this.payRent(team, ownerTeam, rent, space);
           return { action: 'payRent', space, rentAmount: rent };
         }
@@ -179,6 +240,7 @@ export class MonopolyGame {
         const taxAmount = space.space_id === 'income_tax' ? 200 : 100;
         team.resources -= taxAmount;
         this.addLog(`${team.name} paid $${taxAmount} in taxes`, 'warning');
+        this.checkElimination(team);
         return { action: 'tax', space };
 
       default:
@@ -203,6 +265,11 @@ export class MonopolyGame {
     }
 
     team.resources -= cost;
+    this.checkElimination(team);
+    if (team.isEliminated) {
+      // If eliminated due to hitting zero, do not assign ownership
+      return false;
+    }
     space.owner = team.id;
 
     if (space.space_category === 'property' && space.property_id) {
@@ -222,7 +289,9 @@ export class MonopolyGame {
       const property = getPropertyById(space.property_id);
       if (!property) return 0;
 
-      if (space.houses === 2) {
+      if (space.houses === 3) {
+        return property.rent_with_3_house;
+      } else if (space.houses === 2) {
         return property.rent_with_2_house;
       } else if (space.houses === 1) {
         return property.rent_with_1_house;
@@ -248,16 +317,16 @@ export class MonopolyGame {
     return 0;
   }
 
-  payRent(payingTeam: Team, receivingTeam: Team, amount: number, space: BoardSpace): void {
+  payRent(payingTeam: Team, receivingTeam: Team, amount: number, space: BoardSpace): boolean {
     if (payingTeam.resources < amount) {
-      payingTeam.resources = 0;
-      receivingTeam.resources += payingTeam.resources;
-      this.addLog(`${payingTeam.name} went bankrupt paying rent to ${receivingTeam.name}!`, 'error');
-    } else {
-      payingTeam.resources -= amount;
-      receivingTeam.resources += amount;
-      this.addLog(`${payingTeam.name} paid $${amount} rent to ${receivingTeam.name} for ${space.space_title}`, 'info');
+      // Not enough resources - return false to indicate payment failed
+      return false;
     }
+    
+    payingTeam.resources -= amount;
+    receivingTeam.resources += amount;
+    this.addLog(`${payingTeam.name} paid $${amount} rent to ${receivingTeam.name} for ${space.space_title}`, 'info');
+    return true;
   }
 
   applyCardEffect(team: Team, card: Card): void {
@@ -266,12 +335,9 @@ export class MonopolyGame {
       this.addLog(`${team.name} collected $${card.amount} from card`, 'success');
     } else {
       // debit
-      if (team.resources < card.amount) {
-        this.addLog(`${team.name} cannot afford to pay $${card.amount} from card`, 'error');
-        return;
-      }
       team.resources -= card.amount;
       this.addLog(`${team.name} paid $${card.amount} from card`, 'warning');
+      this.checkElimination(team);
     }
   }
 
@@ -308,8 +374,8 @@ export class MonopolyGame {
       return false;
     }
 
-    // Can't build more than 2 houses
-    if (space.houses >= 2) return false;
+    // Can't build more than 3 houses
+    if (space.houses >= 3) return false;
 
     // Check if can afford
     if (team.resources < property.house_cost) return false;
@@ -339,6 +405,11 @@ export class MonopolyGame {
     team.resources -= property.house_cost;
     space.houses += 1;
     this.addLog(`${team.name} built a house on ${property.property_name} for $${property.house_cost}`, 'success');
+    this.checkElimination(team);
+    if (team.isEliminated) {
+      // If elimination occurred, the property and houses have been reset
+      return false;
+    }
     return true;
   }
 
@@ -459,10 +530,17 @@ export class MonopolyGame {
   }
 
   nextTurn(): void {
-    this.currentTeamIndex = (this.currentTeamIndex + 1) % this.teams.length;
-    if (this.currentTeamIndex === 0) {
-      this.turnNumber += 1;
-    }
+    const totalTeams = this.teams.length;
+    let attempts = 0;
+    do {
+      this.currentTeamIndex = (this.currentTeamIndex + 1) % totalTeams;
+      if (this.currentTeamIndex === 0) {
+        this.turnNumber += 1;
+      }
+      attempts += 1;
+      // Avoid infinite loop if all eliminated
+      if (attempts > totalTeams) break;
+    } while (this.teams[this.currentTeamIndex]?.isEliminated);
     this.doubleCount = 0;
     const currentTeam = this.getCurrentTeam();
     this.addLog(`Turn ${this.turnNumber + 1}: ${currentTeam.name}'s turn`, 'info');
@@ -475,12 +553,15 @@ export class MonopolyGame {
       this.addLog(`${team.name} rolled doubles and got out of jail!`, 'success');
       return true;
     } else {
+      // Increment trapTurns
       team.trapTurns += 1;
+      
       if (team.trapTurns >= 3) {
         team.resources -= 50;
         team.inTrap = false;
         team.trapTurns = 0;
         this.addLog(`${team.name} paid $50 to get out of jail`, 'warning');
+        this.checkElimination(team);
         return true;
       }
       this.addLog(`${team.name} is still in jail (turn ${team.trapTurns}/3)`, 'info');
@@ -494,6 +575,7 @@ export class MonopolyGame {
       team.inTrap = false;
       team.trapTurns = 0;
       this.addLog(`${team.name} paid $50 to get out of jail`, 'warning');
+      this.checkElimination(team);
       return true;
     }
     return false;

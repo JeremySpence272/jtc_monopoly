@@ -11,10 +11,15 @@ import sys
 import os
 import tempfile
 import re
+import json
+from pathlib import Path
 from tests import run_test, TEST_REGISTRY
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for React frontend
+
+# Path to game state file
+GAME_STATE_FILE = Path(__file__).parent / "game_state.json"
 
 def normalize_output(output: str) -> str:
     """Normalize output for comparison (strip whitespace, handle newlines)"""
@@ -166,15 +171,125 @@ def test_code():
             "error": f"Server error: {str(e)}"
         }), 500
 
+@app.route('/save-game-state', methods=['POST'])
+def save_game_state():
+    """
+    Save game state to game_state.json file
+    Request body: { "gameState": string (JSON string) }
+    Response: { "success": bool, "message": str }
+    """
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({
+                "success": False,
+                "message": "No data provided"
+            }), 400
+        
+        game_state = data.get('gameState')
+        
+        if game_state is None:
+            return jsonify({
+                "success": False,
+                "message": "No gameState provided"
+            }), 400
+        
+        # gameState is already a JSON string from the frontend
+        # Write it directly to the file
+        with open(GAME_STATE_FILE, 'w') as f:
+            if isinstance(game_state, str):
+                # It's already a JSON string, write it as-is
+                f.write(game_state)
+            else:
+                # It's an object, stringify it
+                json.dump(game_state, f, indent=2)
+        
+        return jsonify({
+            "success": True,
+            "message": "Game state saved successfully"
+        }), 200
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": f"Error saving game state: {str(e)}"
+        }), 500
+
+@app.route('/load-game-state', methods=['GET'])
+def load_game_state():
+    """
+    Load game state from game_state.json file
+    Response: { "success": bool, "gameState": string (JSON string), "message": str }
+    """
+    try:
+        if not GAME_STATE_FILE.exists():
+            return jsonify({
+                "success": False,
+                "gameState": None,
+                "message": "No saved game state found"
+            }), 404
+        
+        # Read the file as a string (it contains a JSON string)
+        with open(GAME_STATE_FILE, 'r') as f:
+            game_state = f.read()
+        
+        # Validate it's valid JSON
+        try:
+            json.loads(game_state)
+        except json.JSONDecodeError:
+            return jsonify({
+                "success": False,
+                "gameState": None,
+                "message": "Invalid JSON in game state file"
+            }), 400
+        
+        return jsonify({
+            "success": True,
+            "gameState": game_state,
+            "message": "Game state loaded successfully"
+        }), 200
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "gameState": None,
+            "message": f"Error loading game state: {str(e)}"
+        }), 500
+
+@app.route('/reset-game-state', methods=['POST'])
+def reset_game_state():
+    """
+    Reset/delete game_state.json file
+    Response: { "success": bool, "message": str }
+    """
+    try:
+        if GAME_STATE_FILE.exists():
+            GAME_STATE_FILE.unlink()
+        
+        return jsonify({
+            "success": True,
+            "message": "Game state reset successfully"
+        }), 200
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": f"Error resetting game state: {str(e)}"
+        }), 500
+
 @app.route('/health', methods=['GET'])
 def health():
     """Health check endpoint"""
     return jsonify({"status": "ok"}), 200
 
 if __name__ == '__main__':
-    print("Starting Monopoly Code Testing Server on http://localhost:5000")
+    print("Starting Monopoly Code Testing Server on http://localhost:5001")
     print("Endpoints:")
     print("  POST /test-code - Test Python code")
+    print("  POST /save-game-state - Save game state to file")
+    print("  GET  /load-game-state - Load game state from file")
+    print("  POST /reset-game-state - Reset game state file")
     print("  GET  /health - Health check")
     app.run(host='0.0.0.0', port=5001, debug=True)
 

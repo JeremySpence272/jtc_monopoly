@@ -8,11 +8,13 @@ import { DiceControls } from "./components/DiceControls";
 import { PurchaseModal } from "./components/PurchaseModal";
 import { CardModal } from "./components/CardModal";
 import { ManagePropertyModal } from "./components/ManagePropertyModal";
+import { SellPropertiesModal } from "./components/SellPropertiesModal";
 import { getPropertyById, getPropertyByPosition } from "./data/properties";
 import { getQuestionByPropertyId, getQuestionById } from "./data/questions";
 import "./App.css";
 
 const STORAGE_KEY = "monopoly_game_state";
+const BACKEND_URL = "http://localhost:5001";
 
 interface GameState {
   teams: Team[];
@@ -23,8 +25,18 @@ interface GameState {
 }
 
 function App() {
-  const [game, setGame] = useState<MonopolyGame | null>(null);
-  const [gameState, setGameState] = useState<GameState | null>(null);
+  // Initialize with a default game immediately to avoid "Loading..." on first render
+  const [game, setGame] = useState<MonopolyGame>(() => new MonopolyGame());
+  const [gameState, setGameState] = useState<GameState>(() => {
+    const defaultGame = new MonopolyGame();
+    return {
+      teams: defaultGame.teams,
+      currentTeam: defaultGame.getCurrentTeam(),
+      turnNumber: defaultGame.turnNumber,
+      boardSpaces: defaultGame.boardSpaces,
+      gameLog: defaultGame.gameLog,
+    };
+  });
   const [purchaseModal, setPurchaseModal] = useState<{
     isOpen: boolean;
     space: BoardSpace | null;
@@ -58,44 +70,125 @@ function App() {
     space: null,
     property: null,
   });
+  const [sellPropertiesModal, setSellPropertiesModal] = useState<{
+    isOpen: boolean;
+    payingTeam: Team | null;
+    rentAmount: number;
+    space: BoardSpace | null;
+    ownerTeam: Team | null;
+  }>({
+    isOpen: false,
+    payingTeam: null,
+    rentAmount: 0,
+    space: null,
+    ownerTeam: null,
+  });
   const [diceRoll, setDiceRoll] = useState<DiceRoll | null>(null);
   const [isRolling, setIsRolling] = useState(false);
   const [canRoll, setCanRoll] = useState(true);
+  const [isLoadingGame, setIsLoadingGame] = useState(false);
 
   useEffect(() => {
-    // Try to load saved game
-    const savedState = localStorage.getItem(STORAGE_KEY);
-    let newGame: MonopolyGame;
+    // Try to load saved game in the background
+    const loadSavedGame = async () => {
+      let loadedGame: MonopolyGame | null = null;
 
-    if (savedState) {
       try {
-        newGame = MonopolyGame.fromJSON(savedState);
-      } catch (error) {
-        console.error("Error loading saved game:", error);
-        newGame = new MonopolyGame();
-      }
-    } else {
-      newGame = new MonopolyGame();
-    }
+        // Try to load from game_state.json file with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
 
-    setGame(newGame);
-    updateGameState(newGame);
+        try {
+          const response = await fetch(`${BACKEND_URL}/load-game-state`, {
+            signal: controller.signal,
+          });
+          clearTimeout(timeoutId);
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.gameState) {
+              const gameStateJson =
+                typeof data.gameState === "string"
+                  ? data.gameState
+                  : JSON.stringify(data.gameState);
+              loadedGame = MonopolyGame.fromJSON(gameStateJson);
+              console.log("Loaded game state from game_state.json");
+            }
+          }
+        } catch (fetchError) {
+          clearTimeout(timeoutId);
+          console.log(
+            "Could not load from backend, trying localStorage:",
+            fetchError
+          );
+        }
+
+        // If we didn't get a game from the backend, try localStorage
+        if (!loadedGame) {
+          const savedState = localStorage.getItem(STORAGE_KEY);
+          if (savedState) {
+            try {
+              loadedGame = MonopolyGame.fromJSON(savedState);
+              console.log("Loaded game state from localStorage");
+            } catch (err) {
+              console.error("Error loading from localStorage:", err);
+            }
+          }
+        }
+
+        // If we successfully loaded a game, update the state
+        if (loadedGame) {
+          setGame(loadedGame);
+          const currentTeam = loadedGame.getCurrentTeam();
+          setGameState({
+            teams: loadedGame.teams,
+            currentTeam: currentTeam,
+            turnNumber: loadedGame.turnNumber,
+            boardSpaces: loadedGame.boardSpaces,
+            gameLog: loadedGame.gameLog,
+          });
+          setCanRoll(true);
+          // Save in background to sync
+          updateGameState(loadedGame).catch((err) => {
+            console.error("Error saving loaded game state:", err);
+          });
+        }
+      } catch (error) {
+        console.error("Error in loadSavedGame:", error);
+      }
+    };
+
+    loadSavedGame();
   }, []);
 
-  const updateGameState = (gameInstance: MonopolyGame) => {
-    setGameState({
+  const updateGameState = async (gameInstance: MonopolyGame) => {
+    const newState = {
       teams: gameInstance.teams,
       currentTeam: gameInstance.getCurrentTeam(),
       turnNumber: gameInstance.turnNumber,
       boardSpaces: gameInstance.boardSpaces,
       gameLog: gameInstance.gameLog,
+    };
+
+    setGameState(newState);
+
+    // Save to game_state.json file (don't block on this)
+    const gameStateJson = gameInstance.toJSON();
+    fetch(`${BACKEND_URL}/save-game-state`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ gameState: gameStateJson }),
+    }).catch((error) => {
+      console.error("Error saving game state to file:", error);
     });
 
-    // Save to localStorage
+    // Also save to localStorage as backup
     try {
       localStorage.setItem(STORAGE_KEY, gameInstance.toJSON());
     } catch (error) {
-      console.error("Error saving game state:", error);
+      console.error("Error saving game state to localStorage:", error);
     }
   };
 
@@ -103,19 +196,6 @@ function App() {
     if (!game || !canRoll || isRolling) return;
 
     const currentTeam = game.getCurrentTeam();
-
-    // Handle jail logic
-    if (currentTeam.inTrap) {
-      const roll = game.rollDice();
-      setDiceRoll(roll);
-      const gotOut = game.handleJailRoll(currentTeam, roll);
-      updateGameState(game);
-
-      if (!gotOut) {
-        setCanRoll(false);
-        return;
-      }
-    }
 
     setIsRolling(true);
     setCanRoll(false);
@@ -139,15 +219,19 @@ function App() {
       if (roll.isDouble) {
         game.doubleCount += 1;
         if (game.doubleCount >= 3) {
+          // Three doubles - just move to jail position, no blocking
           currentTeam.position = 10;
-          currentTeam.inTrap = true;
-          currentTeam.trapTurns = 0;
           game.addLog(
             `${currentTeam.name} rolled three doubles and went to jail!`,
             "warning"
           );
           updateGameState(game);
           setIsRolling(false);
+          setCanRoll(false);
+          // Automatically end turn after showing message
+          setTimeout(() => {
+            handleEndTurn();
+          }, 1500);
           return;
         }
       } else {
@@ -209,6 +293,25 @@ function App() {
             property: property || null,
             question,
           });
+        } else if (landingAction.action === "insufficientFundsForRent") {
+          // Team needs to sell properties to pay rent
+          const ownerTeam =
+            landingAction.ownerTeamId !== undefined
+              ? gameState.teams.find(
+                  (t) => t.id === landingAction.ownerTeamId
+                ) || null
+              : null;
+
+          setSellPropertiesModal({
+            isOpen: true,
+            payingTeam: currentTeam,
+            rentAmount: landingAction.rentAmount || 0,
+            space: landingAction.space,
+            ownerTeam: ownerTeam,
+          });
+
+          setCanRoll(false);
+          setIsRolling(false);
         } else if (landingAction.action === "payRent") {
           // Rent already paid in handleLanding
           setCanRoll(roll.isDouble);
@@ -221,6 +324,9 @@ function App() {
               deckType: landingAction.deckType,
             });
           }
+          setCanRoll(roll.isDouble);
+        } else if (landingAction.action === "goToJail") {
+          // Go to Jail - just move to jail, no blocking
           setCanRoll(roll.isDouble);
         } else {
           setCanRoll(roll.isDouble);
@@ -235,6 +341,114 @@ function App() {
     if (!game) return;
     game.nextTurn();
     updateGameState(game);
+    setDiceRoll(null);
+    setCanRoll(true);
+  };
+
+  const handleLoadGame = async () => {
+    if (isLoadingGame) return;
+
+    setIsLoadingGame(true);
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+      let response;
+      try {
+        response = await fetch(`${BACKEND_URL}/load-game-state`, {
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        throw fetchError;
+      }
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.gameState) {
+          // gameState is a JSON string from the backend
+          const gameStateJson =
+            typeof data.gameState === "string"
+              ? data.gameState
+              : JSON.stringify(data.gameState);
+          const loadedGame = MonopolyGame.fromJSON(gameStateJson);
+          setGame(loadedGame);
+          setGameState({
+            teams: loadedGame.teams,
+            currentTeam: loadedGame.getCurrentTeam(),
+            turnNumber: loadedGame.turnNumber,
+            boardSpaces: loadedGame.boardSpaces,
+            gameLog: loadedGame.gameLog,
+          });
+          // Don't await - let it save in background
+          updateGameState(loadedGame).catch((err) =>
+            console.error("Error saving loaded state:", err)
+          );
+          setDiceRoll(null);
+          setCanRoll(true);
+          alert("Game state loaded successfully!");
+        } else {
+          alert("No saved game state found");
+        }
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(errorData.message || "Failed to load game state");
+      }
+    } catch (error) {
+      console.error("Error loading game:", error);
+      if (error instanceof Error && error.name === "AbortError") {
+        alert("Request timed out. Is the backend server running?");
+      } else {
+        alert(
+          "Error loading game state: " +
+            (error instanceof Error ? error.message : String(error))
+        );
+      }
+    } finally {
+      setIsLoadingGame(false);
+    }
+  };
+
+  const handleNewGame = async () => {
+    if (
+      !confirm(
+        "Are you sure you want to start a new game? This will reset all progress."
+      )
+    ) {
+      return;
+    }
+
+    // Reset game state file on backend (don't block on this)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
+    fetch(`${BACKEND_URL}/reset-game-state`, {
+      method: "POST",
+      signal: controller.signal,
+    })
+      .then(() => clearTimeout(timeoutId))
+      .catch((error) => {
+        clearTimeout(timeoutId);
+        console.error("Error resetting game state file:", error);
+      });
+
+    // Clear localStorage
+    localStorage.removeItem(STORAGE_KEY);
+
+    // Create new game
+    const newGame = new MonopolyGame();
+    setGame(newGame);
+    setGameState({
+      teams: newGame.teams,
+      currentTeam: newGame.getCurrentTeam(),
+      turnNumber: newGame.turnNumber,
+      boardSpaces: newGame.boardSpaces,
+      gameLog: newGame.gameLog,
+    });
+    // Don't await - let it save in background
+    updateGameState(newGame).catch((err) =>
+      console.error("Error saving new game state:", err)
+    );
     setDiceRoll(null);
     setCanRoll(true);
   };
@@ -352,7 +566,7 @@ function App() {
       !manageModal.space.property_id
     )
       return;
-    const ownerTeam = gameState?.teams.find(
+    const ownerTeam = gameState.teams.find(
       (t) => t.id === manageModal.space?.owner
     );
     if (!ownerTeam) return;
@@ -381,7 +595,7 @@ function App() {
       !manageModal.space.property_id
     )
       return;
-    const ownerTeam = gameState?.teams.find(
+    const ownerTeam = gameState.teams.find(
       (t) => t.id === manageModal.space?.owner
     );
     if (!ownerTeam) return;
@@ -404,7 +618,7 @@ function App() {
 
   const handleSellProperty = () => {
     if (!game || !manageModal.space) return;
-    const ownerTeam = gameState?.teams.find(
+    const ownerTeam = gameState.teams.find(
       (t) => t.id === manageModal.space?.owner
     );
     if (!ownerTeam) return;
@@ -423,10 +637,10 @@ function App() {
 
   const handleSellToTeam = (buyerId: number, price: number) => {
     if (!game || !manageModal.space) return;
-    const ownerTeam = gameState?.teams.find(
+    const ownerTeam = gameState.teams.find(
       (t) => t.id === manageModal.space?.owner
     );
-    const buyerTeam = gameState?.teams.find((t) => t.id === buyerId);
+    const buyerTeam = gameState.teams.find((t) => t.id === buyerId);
     if (!ownerTeam || !buyerTeam) return;
 
     if (
@@ -447,9 +661,135 @@ function App() {
     }
   };
 
-  if (!game || !gameState) {
-    return <div>Loading...</div>;
-  }
+  const handleSellPropertyForRent = (
+    space: BoardSpace,
+    property?: Property
+  ) => {
+    if (!game || !sellPropertiesModal.payingTeam) return;
+
+    // Get fresh team reference from game state
+    const payingTeam = game.teams.find(
+      (t) => t.id === sellPropertiesModal.payingTeam?.id
+    );
+    if (!payingTeam) return;
+
+    const success = game.sellProperty(payingTeam, space, property);
+    if (success) {
+      updateGameState(game);
+      // Refresh the paying team in modal state from updated game (source of truth)
+      const updatedTeam = game.teams.find((t) => t.id === payingTeam.id);
+      if (updatedTeam) {
+        setSellPropertiesModal((prev) => ({
+          ...prev,
+          payingTeam: updatedTeam,
+        }));
+      }
+    }
+  };
+
+  const handlePayRentAfterSelling = () => {
+    if (
+      !game ||
+      !sellPropertiesModal.payingTeam ||
+      !sellPropertiesModal.space ||
+      !sellPropertiesModal.ownerTeam
+    )
+      return;
+
+    // Get fresh team reference from game state
+    const payingTeam = game.teams.find(
+      (t) => t.id === sellPropertiesModal.payingTeam?.id
+    );
+    const ownerTeam = game.teams.find(
+      (t) => t.id === sellPropertiesModal.ownerTeam?.id
+    );
+
+    if (!payingTeam || !ownerTeam) return;
+
+    const success = game.payRent(
+      payingTeam,
+      ownerTeam,
+      sellPropertiesModal.rentAmount,
+      sellPropertiesModal.space
+    );
+
+    if (success) {
+      updateGameState(game);
+      setSellPropertiesModal({
+        isOpen: false,
+        payingTeam: null,
+        rentAmount: 0,
+        space: null,
+        ownerTeam: null,
+      });
+      // Use the current diceRoll state
+      const currentRoll = diceRoll;
+      setCanRoll(currentRoll?.isDouble || false);
+    } else {
+      // Still can't pay - eliminate
+      game.checkElimination(payingTeam);
+      updateGameState(game);
+      setSellPropertiesModal({
+        isOpen: false,
+        payingTeam: null,
+        rentAmount: 0,
+        space: null,
+        ownerTeam: null,
+      });
+      setCanRoll(false);
+      setTimeout(() => {
+        handleEndTurn();
+      }, 1500);
+    }
+  };
+
+  const handleDeclineSelling = () => {
+    if (
+      !game ||
+      !sellPropertiesModal.payingTeam ||
+      !sellPropertiesModal.space ||
+      !sellPropertiesModal.ownerTeam
+    )
+      return;
+
+    // Get fresh team references from game state
+    const payingTeam = game.teams.find(
+      (t) => t.id === sellPropertiesModal.payingTeam?.id
+    );
+    const ownerTeam = game.teams.find(
+      (t) => t.id === sellPropertiesModal.ownerTeam?.id
+    );
+
+    if (!payingTeam || !ownerTeam) return;
+
+    // Pay what they can and eliminate
+    const amountPaid = Math.max(0, payingTeam.resources);
+    payingTeam.resources -= amountPaid;
+    ownerTeam.resources += amountPaid;
+    game.addLog(
+      `${payingTeam.name} went bankrupt paying rent to ${ownerTeam.name}!`,
+      "error"
+    );
+    game.checkElimination(payingTeam);
+
+    updateGameState(game);
+    setSellPropertiesModal({
+      isOpen: false,
+      payingTeam: null,
+      rentAmount: 0,
+      space: null,
+      ownerTeam: null,
+    });
+    setCanRoll(false);
+    setTimeout(() => {
+      handleEndTurn();
+    }, 1500);
+  };
+
+  // No longer need loading check since we initialize with default game
+  // if (!game || !gameState) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <div className="app">
@@ -459,11 +799,13 @@ function App() {
           <span>Turn: {gameState.turnNumber + 1}</span>
           <button
             className="btn btn-small"
-            onClick={() => {
-              localStorage.removeItem(STORAGE_KEY);
-              window.location.reload();
-            }}
+            onClick={handleLoadGame}
+            disabled={isLoadingGame}
+            style={{ marginRight: "10px" }}
           >
+            {isLoadingGame ? "Loading..." : "Load Game"}
+          </button>
+          <button className="btn btn-small" onClick={handleNewGame}>
             New Game
           </button>
         </div>
@@ -568,6 +910,22 @@ function App() {
                 )
               : 0
           }
+        />
+      )}
+      {sellPropertiesModal.payingTeam && (
+        <SellPropertiesModal
+          isOpen={sellPropertiesModal.isOpen}
+          onClose={handleDeclineSelling}
+          payingTeam={sellPropertiesModal.payingTeam}
+          rentAmount={sellPropertiesModal.rentAmount}
+          space={sellPropertiesModal.space}
+          ownerTeam={sellPropertiesModal.ownerTeam}
+          ownedSpaces={
+            game ? game.getOwnedSpaces(sellPropertiesModal.payingTeam) : []
+          }
+          onSellProperty={handleSellPropertyForRent}
+          onPayRent={handlePayRentAfterSelling}
+          onDecline={handleDeclineSelling}
         />
       )}
     </div>

@@ -10,6 +10,7 @@ export interface Team {
   inTrap: boolean;
   trapTurns: number;
   getOutOfTrapFree: number;
+  isEliminated?: boolean;
 }
 
 export interface BoardSpace {
@@ -30,6 +31,7 @@ export interface Property {
   rent_with_group: number;
   rent_with_1_house: number;
   rent_with_2_house: number;
+  rent_with_3_house: number;
   house_cost: number;
   board_position: number;
 }
@@ -60,11 +62,12 @@ export interface GameLogEntry {
 }
 
 export interface LandingAction {
-  action: 'purchase' | 'payRent' | 'drawCard' | 'tax' | null;
+  action: 'purchase' | 'payRent' | 'drawCard' | 'tax' | 'goToJail' | 'insufficientFundsForRent' | null;
   space: BoardSpace;
   property?: Property;
   deckType?: 'chance' | 'community_chest';
   rentAmount?: number;
+  ownerTeamId?: number;
   card?: {
     card_id: string;
     message: string;

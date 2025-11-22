@@ -269,6 +269,12 @@ export const PurchaseModal: React.FC<PurchaseModalProps> = ({
               </span>
             </div>
             <div className="detail-row">
+              <span className="detail-label">Rent with 3 Houses:</span>
+              <span className="detail-value">
+                ${property.rent_with_3_house}
+              </span>
+            </div>
+            <div className="detail-row">
               <span className="detail-label">House Cost:</span>
               <span className="detail-value">${property.house_cost}</span>
             </div>
@@ -399,17 +405,7 @@ export const PurchaseModal: React.FC<PurchaseModalProps> = ({
           <button className="btn btn-secondary" onClick={onDecline}>
             Decline
           </button>
-          <button
-            className="btn btn-primary"
-            onClick={onPurchase}
-            disabled={
-              question
-                ? question.question_type === "multiple_choice"
-                  ? !(testResult?.success && testResult?.valid)
-                  : !(testResult?.success && testResult?.valid)
-                : false
-            }
-          >
+          <button className="btn btn-primary" onClick={onPurchase}>
             Purchase for ${cost}
           </button>
         </div>

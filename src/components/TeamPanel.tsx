@@ -15,7 +15,9 @@ export const TeamPanel: React.FC<TeamPanelProps> = ({ teams, currentTeam }) => {
         {teams.map((team) => (
           <div
             key={team.id}
-            className={`team-card ${team.id === currentTeam.id ? "active" : ""}`}
+            className={`team-card ${
+              team.id === currentTeam.id ? "active" : ""
+            }`}
           >
             <div className="team-header">
               <div
@@ -23,7 +25,6 @@ export const TeamPanel: React.FC<TeamPanelProps> = ({ teams, currentTeam }) => {
                 style={{ backgroundColor: team.color }}
               ></div>
               <h3>{team.name}</h3>
-              {team.inTrap && <span className="jail-indicator">In Jail</span>}
             </div>
             <div className="team-stats">
               <div className="stat">

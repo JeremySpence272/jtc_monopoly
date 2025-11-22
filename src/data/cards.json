@@ -163,7 +163,7 @@
   {
     "card_id": "chance_4",
     "deck_type": "chance",
-    "message": "Your plot rendered perfectly on the first try. Collect $60.",
+    "message": "Your gui rendered perfectly on the first try. Collect $60.",
     "amount": 60,
     "type": "credit"
   },
